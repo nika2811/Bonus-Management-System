@@ -3,11 +3,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BonusManagementSystem.Models
 {
-    public class EmployeeRepository:IEmployeeRepository
+    public abstract class EmployeeRepository:IEmployeeRepository
     {
         private readonly EmployeeDbContext _context;
 
-        public EmployeeRepository(EmployeeDbContext context)
+        protected EmployeeRepository(EmployeeDbContext context)
         {
             _context = context;
         }
@@ -21,12 +21,12 @@ namespace BonusManagementSystem.Models
 
         public async Task<Employee> GetEmployeeByIdAsync(int id)
         {
-            return await _context.Employees.FirstOrDefaultAsync(e => e.Id == id);
+            return (await _context.Employees.FirstOrDefaultAsync(e => e.Id == id))!;
         }
         
         public async Task<Employee> GetEmployeeByNameAsync(string name)
         {
-            return await _context.Employees.FirstOrDefaultAsync(e => e.Name == name);
+            return (await _context.Employees.FirstOrDefaultAsync(e => e.Name == name))!;
         }
 
         public async Task<Employee> UpdateEmployeeAsync(Employee employee)

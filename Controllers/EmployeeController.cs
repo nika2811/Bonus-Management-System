@@ -1,5 +1,4 @@
 ﻿using BonusManagementSystem.Models;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BonusManagementSystem.Controllers
