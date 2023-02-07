@@ -31,6 +31,14 @@ public class EmployeeController : ControllerBase
         var employee = await _employeeRepository.GetEmployeeByIdAsync(id);
         return Ok(employee);
     }
+    
+    
+    [HttpGet("{name}")]
+    public async Task<ActionResult<Employee>> GetEmployeeByName(string name)
+    {
+        var employee = await _employeeRepository.GetEmployeeByNameAsync(name);
+        return Ok(employee);
+    }
 
     [HttpPost]
     public async Task<ActionResult<Employee>> AddEmployee(Employee employee)
@@ -38,6 +46,8 @@ public class EmployeeController : ControllerBase
         var newEmployee = await _employeeRepository.AddEmployeeAsync(employee);
         return CreatedAtAction(nameof(GetEmployeeById), new { id = newEmployee.Id }, newEmployee);
     }
+    
+    
 
     [HttpPut("{id}")]
     public async Task<ActionResult<Employee>> UpdateEmployee(int id, Employee employee)
@@ -50,7 +60,6 @@ public class EmployeeController : ControllerBase
         existingEmployee.LastName = employee.LastName;
         existingEmployee.PersonalNumber = employee.PersonalNumber;
         existingEmployee.Salary = employee.Salary;
-        existingEmployee.Recommender = employee.Recommender;
         existingEmployee.DateOfCommencementOfWork = employee.DateOfCommencementOfWork;
 
         var updatedEmployee = await _employeeRepository.UpdateEmployeeAsync(existingEmployee);

@@ -1,6 +1,4 @@
-﻿using BonusManagementSystem.Models;
-
-namespace BonusManagementSystem.Services;
+﻿namespace BonusManagementSystem.Services;
 
 public interface IBonusService
 {

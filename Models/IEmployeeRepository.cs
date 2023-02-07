@@ -9,4 +9,5 @@ public interface IEmployeeRepository
     Task<IEnumerable<Employee>> GetAllEmployeesAsync();
     Task<int> GetBonusCountAsync(DateTime startDate, DateTime endDate);
     Task<Employee> GetEmployeeByNameAsync(string name);
+    
 }

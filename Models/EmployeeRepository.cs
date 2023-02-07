@@ -3,11 +3,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BonusManagementSystem.Models;
 
-public abstract class EmployeeRepository : IEmployeeRepository
+public class EmployeeRepository : IEmployeeRepository
 {
     private readonly ManagementDbContext _context;
 
-    protected EmployeeRepository(ManagementDbContext context)
+    public EmployeeRepository(ManagementDbContext context)
     {
         _context = context;
     }
