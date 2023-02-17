@@ -1,9 +1,10 @@
 ﻿using BonusManagementSystem.DB;
 using BonusManagementSystem.Models;
+using BonusManagementSystem.Repository;
 
 namespace BonusManagementSystem.Services;
 
-public class BonusService:IBonusService
+public class BonusService : IBonusService
 {
     private readonly ManagementDbContext _context;
     private readonly IEmployeeRepository _employeeRepository;
@@ -23,7 +24,7 @@ public class BonusService:IBonusService
             throw new Exception("Employee not found");
 
         var bonusAmount = employee.Salary * (decimal)(percentage / 100);
-        
+
         var bonus = new Bonus
         {
             EmployeeId = employee.Id,
@@ -48,7 +49,6 @@ public class BonusService:IBonusService
             };
             _context.Bonuses.Add(recommenderBonus);
             await _context.SaveChangesAsync();
-            
 
             currentLevel++;
             recommender = await _employeeRepository.GetEmployeeByIdAsync(recommender.RecommenderId);

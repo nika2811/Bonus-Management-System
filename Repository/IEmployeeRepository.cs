@@ -1,4 +1,6 @@
-﻿namespace BonusManagementSystem.Models;
+﻿using BonusManagementSystem.Models;
+
+namespace BonusManagementSystem.Repository;
 
 public interface IEmployeeRepository
 {
@@ -9,5 +11,4 @@ public interface IEmployeeRepository
     Task<IEnumerable<Employee>> GetAllEmployeesAsync();
     Task<int> GetBonusCountAsync(DateTime startDate, DateTime endDate);
     Task<Employee> GetEmployeeByNameAsync(string name);
-    
 }

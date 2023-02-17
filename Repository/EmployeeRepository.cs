@@ -1,7 +1,8 @@
 ﻿using BonusManagementSystem.DB;
+using BonusManagementSystem.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace BonusManagementSystem.Models;
+namespace BonusManagementSystem.Repository;
 
 public class EmployeeRepository : IEmployeeRepository
 {

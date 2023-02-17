@@ -1,5 +1,5 @@
 using BonusManagementSystem.DB;
-using BonusManagementSystem.Models;
+using BonusManagementSystem.Repository;
 using BonusManagementSystem.Services;
 using Microsoft.EntityFrameworkCore;
 
@@ -13,7 +13,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<ManagementDbContext>(
     c => c.UseSqlServer(builder.Configuration["AppDbContextConnection"]));
-builder.Services.AddTransient<IBonusService,BonusService>();
+builder.Services.AddTransient<IBonusService, BonusService>();
 builder.Services.AddTransient<IEmployeeRepository, EmployeeRepository>();
 
 var app = builder.Build();
