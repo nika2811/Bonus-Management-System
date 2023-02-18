@@ -20,7 +20,7 @@ public class EmployeeRepository : IEmployeeRepository
         return employee;
     }
 
-    public async Task<Employee> GetEmployeeByIdAsync(int id)
+    public async Task<Employee> GetEmployeeByIdAsync(int? id)
     {
         return (await _context.Employees.FirstOrDefaultAsync(e => e.Id == id))!;
     }
@@ -55,8 +55,8 @@ public class EmployeeRepository : IEmployeeRepository
 
     public async Task<int> GetBonusCountAsync(DateTime startDate, DateTime endDate)
     {
-        return await _context.Employees
-            .Where(e => e.BonusDate >= startDate && e.BonusDate <= endDate)
+        return await _context.Bonuses
+            .Where(e => e.CreatedAt >= startDate && e.CreatedAt <= endDate)
             .CountAsync();
     }
 }

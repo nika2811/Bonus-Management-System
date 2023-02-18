@@ -1,16 +1,16 @@
 ﻿using BonusManagementSystem.DB;
 using BonusManagementSystem.Models;
-using BonusManagementSystem.Repository;
+using BonusManagementSystem.Services;
 
-namespace BonusManagementSystem.Services;
+namespace BonusManagementSystem.Repository;
 
-public class BonusService : IBonusService
+public class BonusRepository : IBonusRepository
 {
     private readonly ManagementDbContext _context;
     private readonly IEmployeeRepository _employeeRepository;
     private readonly int _maxLevels;
 
-    public BonusService(IEmployeeRepository employeeRepository, ManagementDbContext context)
+    public BonusRepository(IEmployeeRepository employeeRepository, ManagementDbContext context)
     {
         _employeeRepository = employeeRepository;
         _context = context;
@@ -21,7 +21,7 @@ public class BonusService : IBonusService
     {
         var employee = await _employeeRepository.GetEmployeeByIdAsync(employeeId);
         if (employee == null)
-            throw new Exception("Employee not found");
+            throw new ArgumentException("Employee not found", nameof(employeeId));
 
         var bonusAmount = employee.Salary * (decimal)(percentage / 100);
 
@@ -30,22 +30,23 @@ public class BonusService : IBonusService
             EmployeeId = employee.Id,
             Percentage = percentage,
             Amount = bonusAmount,
-            BonusDate = DateTime.Now
+            CreatedAt = DateTime.UtcNow
         };
         _context.Bonuses.Add(bonus);
         await _context.SaveChangesAsync();
 
         var currentLevel = 1;
         var recommender = await _employeeRepository.GetEmployeeByIdAsync(employee.RecommenderId);
-        while (currentLevel <= _maxLevels)
+        while (currentLevel <= _maxLevels && recommender != null)
         {
             var recommenderBonusAmount = bonusAmount * (decimal)0.5;
+            var recommenderBonusPercentage = percentage * 0.5;
             var recommenderBonus = new Bonus
             {
                 EmployeeId = recommender.Id,
-                Percentage = percentage * 0.5,
+                Percentage = recommenderBonusPercentage,
                 Amount = recommenderBonusAmount,
-                BonusDate = DateTime.Now
+                CreatedAt = DateTime.UtcNow
             };
             _context.Bonuses.Add(recommenderBonus);
             await _context.SaveChangesAsync();

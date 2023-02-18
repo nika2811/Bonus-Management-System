@@ -1,4 +1,5 @@
-﻿using BonusManagementSystem.Models;
+﻿using BonusManagementSystem.DB.Mapping;
+using BonusManagementSystem.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace BonusManagementSystem.DB;
@@ -11,4 +12,10 @@ public class ManagementDbContext : DbContext
 
     public DbSet<Employee> Employees { get; set; }
     public DbSet<Bonus> Bonuses { get; set; }
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        modelBuilder.ApplyConfiguration(new BonusMap());
+        base.OnModelCreating(modelBuilder);
+    }
 }

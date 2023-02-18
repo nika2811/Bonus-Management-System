@@ -5,7 +5,7 @@ namespace BonusManagementSystem.Repository;
 public interface IEmployeeRepository
 {
     Task<Employee> AddEmployeeAsync(Employee employee);
-    Task<Employee> GetEmployeeByIdAsync(int id);
+    Task<Employee> GetEmployeeByIdAsync(int? id);
     Task<Employee> UpdateEmployeeAsync(Employee employee);
     Task<bool> DeleteEmployeeAsync(int id);
     Task<IEnumerable<Employee>> GetAllEmployeesAsync();

@@ -9,11 +9,11 @@ namespace BonusManagementSystem.Controllers;
 [ApiController]
 public class EmployeeController : ControllerBase
 {
-    private readonly IBonusService _bonusService;
+    private readonly IBonusRepository _bonusService;
     private readonly IEmployeeRepository _employeeRepository;
 
 
-    public EmployeeController(IEmployeeRepository employeeRepository, IBonusService bonusService)
+    public EmployeeController(IEmployeeRepository employeeRepository, IBonusRepository bonusService)
     {
         _employeeRepository = employeeRepository;
         _bonusService = bonusService;
@@ -49,7 +49,7 @@ public class EmployeeController : ControllerBase
     }
 
 
-    [HttpPut("{id}")]
+    [HttpPut("UpdateEmployee-{id}")]
     public async Task<ActionResult<Employee>> UpdateEmployee(int id, Employee employee)
     {
         if (id != employee.Id)
@@ -60,13 +60,13 @@ public class EmployeeController : ControllerBase
         existingEmployee.LastName = employee.LastName;
         existingEmployee.PersonalNumber = employee.PersonalNumber;
         existingEmployee.Salary = employee.Salary;
-        existingEmployee.DateOfCommencementOfWork = employee.DateOfCommencementOfWork;
+        existingEmployee.EmployedAt = employee.EmployedAt;
 
         var updatedEmployee = await _employeeRepository.UpdateEmployeeAsync(existingEmployee);
         return Ok(updatedEmployee);
     }
 
-    [HttpDelete("{id}")]
+    [HttpDelete("DeleteEmployee-{id}")]
     public async Task<ActionResult<Employee>> DeleteEmployee(int id)
     {
         var employee = await _employeeRepository.DeleteEmployeeAsync(id);
@@ -75,16 +75,9 @@ public class EmployeeController : ControllerBase
 
 
     [HttpPost("give-bonus")]
-    public async Task<IActionResult> GiveBonus(int employeeId, [FromBody] Bonus model)
+    public async Task<IActionResult> GiveBonus(int employeeId, double percentage)
     {
-        try
-        {
-            await _bonusService.GiveBonusAsync(employeeId, model.Percentage);
-            return Ok("Bonus successfully issued");
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(ex.Message);
-        }
+        await _bonusService.GiveBonusAsync(employeeId, percentage);
+        return Ok("Bonus successfully issued");
     }
 }

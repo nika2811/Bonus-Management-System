@@ -1,6 +1,6 @@
 ﻿namespace BonusManagementSystem.Services;
 
-public interface IBonusService
+public interface IBonusRepository
 {
     Task GiveBonusAsync(int employeeId, double percentage);
 }

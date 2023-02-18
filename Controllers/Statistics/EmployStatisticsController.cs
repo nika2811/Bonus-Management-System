@@ -1,17 +1,24 @@
-﻿using BonusManagementSystem.Repository;
+﻿using BonusManagementSystem.DB;
+using BonusManagementSystem.Models;
+using BonusManagementSystem.Repository;
 using BonusManagementSystem.Services;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace BonusManagementSystem.Controllers.Statistics;
 
 public class EmployStatisticsController : Controller
 {
+    private readonly IBonusRepository _bonusService;
+    private readonly ManagementDbContext _context;
     private readonly IEmployeeRepository _employeeRepository;
 
-
-    public EmployStatisticsController(IEmployeeRepository employeeRepository, BonusService bonusService)
+    public EmployStatisticsController(IEmployeeRepository employeeRepository, IBonusRepository bonusService,
+        ManagementDbContext context)
     {
         _employeeRepository = employeeRepository;
+        _bonusService = bonusService;
+        _context = context;
     }
 
     [HttpGet("statistics/bonus-count")]
@@ -25,41 +32,49 @@ public class EmployStatisticsController : Controller
     }
 
     [HttpGet("statistics/top10employees")]
-    public async Task<IActionResult> GetTop10EmployeesWithMostBonuses()
+    public async Task<List<Employee>> Top10EmployeesWithMostBonuses()
     {
-        try
-        {
-            var employees = await _employeeRepository.GetAllEmployeesAsync();
-            var employeesWithBonuses = employees
-                .Where(e => e.Bonuses.Count > 0)
-                .OrderByDescending(e => e.Bonuses.Sum(b => b.Amount))
-                .Take(10);
+        var employeeBonuses = _context.Bonuses
+            .GroupBy(b => b.EmployeeId)
+            .Select(g => new { EmployeeId = g.Key, TotalBonuses = g.Sum(b => b.Amount) })
+            .OrderByDescending(e => e.TotalBonuses)
+            .Take(10)
+            .ToList();
 
-            return Ok(employeesWithBonuses);
-        }
-        catch (Exception ex)
+        var topEmployees = new List<Employee>();
+
+        foreach (var employeeBonus in employeeBonuses)
         {
-            return BadRequest(ex.Message);
+            var employee = await _employeeRepository.GetEmployeeByIdAsync(employeeBonus.EmployeeId);
+            topEmployees.Add(employee);
         }
+
+        return topEmployees.ToList();
     }
 
 
     [HttpGet("statistics/top-10-referred-employees")]
-    public async Task<IActionResult> GetTop10ReferredEmployees()
+    public List<Employee> GetTopReferralBonuses()
     {
-        try
-        {
-            var employees = await _employeeRepository.GetAllEmployeesAsync();
-            var employeesWithReferrals = employees
-                .Where(e => e.ReferredEmployees.Count > 0)
-                .OrderByDescending(e => e.ReferredEmployees.Sum(r => r.Bonuses.Sum(b => b.Amount)))
-                .Take(10);
+        var employeesWithReferralBonuses = _context.Bonuses
+            .Include(b => b.Employee)
+            .Where(b => b.Employee.RecommenderId != null)
+            .GroupBy(b => b.Employee.RecommenderId)
+            .Select(g => new
+            {
+                RecommenderId = g.Key.Value,
+                TotalReferralBonus = g.Sum(b => b.Amount)
+            })
+            .OrderByDescending(x => x.TotalReferralBonus)
+            .Take(10)
+            .ToList();
 
-            return Ok(employeesWithReferrals);
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(ex.Message);
-        }
+        var employeeIds = employeesWithReferralBonuses.Select(e => e.RecommenderId);
+
+        var topEmployees = _context.Employees
+            .Where(e => employeeIds.Contains(e.Id))
+            .ToList();
+
+        return topEmployees;
     }
 }
